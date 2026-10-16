@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Para Histórica y Cultural - Mapa Interactivo</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+</head>
+<body>
+
+  <!-- Barra Superior de Navegación -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-badge">📍</div>
+      <div class="brand-text">
+        <h1>La Para: Historia y Esculturas</h1>
+        <span>Proyecto Escolar de Investigación Comunitaria</span>
+      </div>
+    </div>
+
+    <!-- Buscador y Filtros -->
+    <div class="controls-bar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Buscar escultura o lugar...">
+      </div>
+
+      <div class="filter-chips">
+        <button class="chip-btn active" data-cat="all">Todos</button>
+        <button class="chip-btn" data-cat="esculturas">🦣 Esculturas</button>
+        <button class="chip-btn" data-cat="monumentos">🗿 Monumentos</button>
+        <button class="chip-btn" data-cat="historico">🏛️ Históricos</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal (Mapa y Visor) -->
+  <main class="main-container">
+    <div id="map"></div>
+
+    <!-- Visor de Street View 360° con Objetivo Interactivo -->
+    <div id="streetview-overlay" class="streetview-overlay">
+      <div class="streetview-hud">
+        <div class="streetview-info">
+          <h3 id="streetview-title">Recorrido 360°</h3>
+          <span id="streetview-subtitle">Exploración inmersiva en la calle</span>
+        </div>
+        <button id="btn-close-streetview" class="btn-exit-streetview">✕ Salir de Street View</button>
+      </div>
+
+      <!-- Baliza/Objetivo flotante dentro de Street View -->
+      <div id="streetview-monument-target" class="streetview-monument-target" style="display: none;">
+        <div class="target-icon" id="target-badge-icon">🐴</div>
+        <div class="target-text">
+          <strong id="target-badge-title">Monumento a la vista</strong>
+          <span>📍 ¡Hacé clic acá para inspeccionar la escultura en 360°!</span>
+        </div>
+        <div class="target-btn-action">Ver Escultura 360° ➔</div>
+      </div>
+
+      <div id="street-view-pano"></div>
+    </div>
+  </main>
+
+  <!-- Modal Informativo, Visor 360° con Zoom y Canva -->
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 id="modal-title">Título del Monumento</h2>
+          <div class="modal-badges">
+            <span id="modal-badge-cat" class="badge badge-cat">Categoría</span>
+            <span id="modal-badge-students" class="badge badge-students">Investigación</span>
+          </div>
+        </div>
+        <button id="modal-close-btn" class="btn-close" title="Cerrar">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <p id="modal-address" style="font-size: 13px; color: #64748b; font-weight: 500;">📍 Ubicación</p>
+        <div id="modal-description" class="modal-desc">Descripción...</div>
+
+        <!-- Pestañas del Modal -->
+        <div class="modal-tabs" id="modal-tabs">
+          <button class="modal-tab-btn active" id="tab-btn-360" data-tab="360">🔄 Giro 360° Interactivo</button>
+          <button class="modal-tab-btn" id="tab-btn-canva" data-tab="canva">🎨 Ficha e Investigación</button>
+        </div>
+
+        <!-- Sección 1: Visor 360° del Objeto con Controles de Zoom -->
+        <div id="section-360" class="viewer-360-box">
+          <div class="viewer-360-stage" id="stage-360">
+            <div class="viewer-360-hint">
+              <span>🔄 Arrastrá con el mouse o dedo • Rueda para Zoom</span>
+            </div>
+
+            <!-- Controles flotantes de Zoom -->
+            <div class="viewer-360-zoom-badge">
+              <button class="zoom-btn" id="btn-zoom-out" title="Alejar (Zoom -)">−</button>
+              <span class="zoom-level-text" id="zoom-level-label">1.0x</span>
+              <button class="zoom-btn" id="btn-zoom-in" title="Acercar (Zoom +)">+</button>
+              <button class="zoom-btn" id="btn-zoom-reset" title="Restablecer Zoom" style="font-size: 11px;">↺</button>
+            </div>
+
+            <div class="viewer-360-img-container">
+              <img id="viewer-360-img" src="img/brochero/1.jpg" alt="Estatua en 360 grados">
+            </div>
+          </div>
+
+          <div class="viewer-360-bar">
+            <button id="btn-auto-spin">▶ Giro Automático</button>
+            <div class="viewer-360-slider-wrap">
+              <input type="range" id="slider-360" min="1" max="27" value="1">
+            </div>
+            <span id="label-360-counter" class="viewer-360-counter">Foto 1 de 27</span>
+          </div>
+        </div>
+
+        <!-- Sección 2: Visor de Canva / Diapositivas -->
+        <div id="section-canva" class="canva-viewer-container" style="display: none;">
+          <div class="canva-header-bar">
+            <span>🎨 Presentación Interactiva de Alumnos</span>
+            <span id="slide-indicator">Diapositiva 1 de 3</span>
+          </div>
+
+          <div id="canva-interactive-frame">
+            <div class="slide-deck">
+              <div class="slide-content">
+                <h3 id="slide-title">Cargando diapositiva...</h3>
+                <p id="slide-body">Detalles de la investigación realizada por el curso.</p>
+              </div>
+              <div class="slide-footer">
+                <span id="slide-note">Investigación escolar</span>
+                <div class="slide-controls">
+                  <button id="btn-prev-slide" class="slide-btn">◀ Anterior</button>
+                  <button id="btn-next-slide" class="slide-btn">Siguiente ▶</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <span style="font-size: 12px; color: #64748b;">La Para, Córdoba • Patrimonio Histórico</span>
+        <button id="btn-open-streetview" class="btn-streetview">
+          🚶 Ver en 360° / Street View
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+﻿{
+  "name": "mapa-la-para",
+  "version": "1.0.0",
+  "description": "Mapa interactivo de lugares históricos y esculturas de La Para (Córdoba)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  }
+}
